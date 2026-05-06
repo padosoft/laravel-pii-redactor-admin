@@ -45,3 +45,5 @@
 - If Copilot remains as a requested reviewer with no new review but the timeline has a recent `copilot_work_started` event, Copilot is running. Wait for the completed `reviewed` event/review body; do not remove/re-request the reviewer or document it as blocked.
 - Re-requesting Copilot multiple times for the same head SHA after `copilot_work_started` can stack overlapping reviews and make the PR look stuck. Once the timeline shows Copilot started, wait for completion instead of retrying.
 - After the initial bootstrap, use smaller PRs for roadmap work. Focused PRs make Copilot feedback easier to interpret, reduce CI/review retry cost, and avoid mixing unrelated fixes.
+- TypeScript 6 treats `moduleResolution: "Node"` as deprecated `node10`; Vite/ESM packages should use `moduleResolution: "Bundler"` to keep typecheck green without suppression.
+- GitHub Actions v4 emitted Node.js 20 deprecation warnings in this repo; use current Actions majors and keep CI on Node.js 24+ for the frontend toolchain.

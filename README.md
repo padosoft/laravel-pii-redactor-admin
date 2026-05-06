@@ -62,6 +62,8 @@ Safe demo payloads live in `resources/demo/admin-api-fixtures.json` and are reus
 
 ## Verification
 
+Frontend development and CI use Node.js 24 or newer.
+
 Every task must keep these gates green locally and in GitHub Actions:
 
 ```bash
