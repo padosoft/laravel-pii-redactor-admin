@@ -1,0 +1,105 @@
+{
+  "status": {
+    "package": {
+      "name": "padosoft/laravel-pii-redactor-admin",
+      "enabled": true
+    },
+    "strategies": ["mask", "hash", "tokenise", "drop"],
+    "snapshot": {
+      "enabled": true,
+      "default_strategy": "mask",
+      "token_store": {
+        "driver": "database"
+      },
+      "detectors": [
+        {
+          "name": "email",
+          "class": "EmailDetector"
+        }
+      ]
+    }
+  },
+  "detectors": {
+    "detectors": [
+      {
+        "name": "email",
+        "class": "EmailDetector"
+      }
+    ],
+    "packs": []
+  },
+  "customRules": {
+    "packs": [
+      {
+        "name": "tenant_rules",
+        "path": "/safe/rules.yaml",
+        "valid": true,
+        "rule_count": 2
+      }
+    ]
+  },
+  "settings": {
+    "admin": {
+      "enabled": true
+    },
+    "redactor": {
+      "strategy": "mask"
+    }
+  },
+  "auditEvents": [
+    {
+      "event_type": "scan",
+      "status_code": 200,
+      "counts_json": {
+        "email": 1
+      }
+    },
+    {
+      "event_type": "detokenise.denied",
+      "status_code": 403,
+      "justification": "incident response"
+    }
+  ],
+  "tokenMaps": [
+    {
+      "token": "[tok:email:abcdef012345]",
+      "detector": "email",
+      "created_at": "2026-05-06T00:00:00Z"
+    },
+    {
+      "token": "[tok:iban:111122223333]",
+      "detector": "iban",
+      "created_at": "2026-05-06T00:00:00Z"
+    }
+  ],
+  "scan": {
+    "report": {
+      "total": 1,
+      "counts": {
+        "email": 1
+      },
+      "samples": {
+        "email": ["[email]"]
+      }
+    }
+  },
+  "redact": {
+    "output": "[REDACTED]",
+    "strategy": "mask",
+    "report": {
+      "total": 1,
+      "counts": {
+        "email": 1
+      },
+      "samples": {
+        "email": ["[email]"]
+      }
+    }
+  },
+  "detokenise": {
+    "output": "revealed@example.test",
+    "token_count": 1,
+    "resolved_count": 1,
+    "unresolved_tokens": []
+  }
+}

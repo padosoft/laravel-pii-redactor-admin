@@ -1,0 +1,43 @@
+# Lessons
+
+## 2026-05-06
+
+- This package is initially a clean library scaffold, not a Laravel app. Route tests need Testbench and must explicitly set `pii-redactor-admin.enabled=true` for enabled-route scenarios.
+- The core package token table contains a plaintext `original` column by design. Admin token-map code must use an explicit select list and tests must assert the raw value is absent from JSON.
+- User explicitly required PHPUnit, Vitest, Playwright, and GitHub Actions coverage for all UI/UX interactions and task iterations. A task is not closed until those gates are green locally and in CI.
+- Audit-event responses should also stay on an explicit projection even though the current audit schema is safe; this prevents future audit columns from being exposed accidentally.
+- Detokenise success tests can use the core package database token store by setting `pii-redactor.token_store.driver=database` and inserting into `pii_token_maps`.
+- Playwright placeholder selectors can become ambiguous on token-map controls because token placeholders contain detector-looking text; use accessible labels for filter inputs.
+- Detokenise UI state must be reset whenever reveal inputs change so a previous arm action cannot carry over to a modified token or justification.
+- Playwright specs running under Node ESM may reject bare JSON imports; use `createRequire(import.meta.url)` for local JSON fixtures unless the runner is configured for JSON import attributes.
+- For PHP `^8.3` CI, Composer lock must be generated with a PHP 8.3 platform constraint; otherwise local PHP 8.4 can lock Symfony 8 packages that fail on the GitHub Actions PHP 8.3 runner.
+- GitHub CLI may not resolve `copilot` as a normal reviewer. The working fallback is GraphQL `requestReviewsByLogin` with `botLogins[]='copilot-pull-request-reviewer[bot]'`, then verify via `gh api repos/<owner>/<repo>/pulls/<PR>/requested_reviewers`.
+- PHPUnit 12 on GitHub Actions fails when `phpunit.xml` references a missing testsuite directory; do not declare empty suites unless the directory exists in git.
+- To know whether Copilot actually ran, check requested reviewers, `pulls/<PR>/reviews`, `issues/<PR>/comments`, `pulls/<PR>/comments`, and GraphQL review threads. CI green alone does not prove Copilot reviewed the PR.
+- Installable Laravel packages cannot rely on the host application's Vite manifest containing package-local `resources/js` or `resources/css` entries. Ship package-built assets or document/register host Vite inputs explicitly.
+- Laravel Gate checks for request-user-only abilities should use `Gate::forUser($request->user())->inspect($ability)` without passing the user again as an ability argument.
+- Audit target correlation hashes should be keyed HMACs, not plain SHA-256, so low-entropy PII cannot be recovered by offline dictionary checks if audit rows leak.
+- Admin audit actor identifiers should be stored as strings, not unsigned big integers, because Laravel auth identifiers may be UUIDs/ULIDs.
+- Package root `composer.json` should not require a sibling path repository for normal installs. Use a portable remote/VCS repository for local package-root development, or document path repositories outside the package manifest.
+- Admin shell display names must tolerate custom auth user implementations without `name` or `email` properties.
+- SQL `LIKE` filters that escape `%` and `_` must specify an explicit `ESCAPE` clause or use another portable literal-search strategy.
+- Comma-separated middleware env config should trim entries before filtering so values like `web, auth` do not register an invalid `' auth'` middleware.
+- Blade manifest loading should normalize failed `json_decode()` results to an array before indexing, even when the manifest is package-generated.
+- Once Composer installs the core package from a remote/VCS source, CI should not also checkout a sibling core repository unless a step explicitly uses that path.
+- Read-only React admin pages still need explicit `.catch()` handling for initial `useEffect` fetches; otherwise rejected API calls become unhandled promise rejections instead of operator-visible failures.
+- API endpoints should not duplicate status-advertised enum lists in validation rules; derive validation from the same factory/config source the UI reads.
+- Unavailable-list endpoints should keep the same top-level collection key as available responses so UI and API consumers do not need divergent parsing paths.
+- Prefer `DB::connection(...)->getSchemaBuilder()` for optional package table checks; facade roots are not a stable schema-builder contract.
+- Package asset routes should send `X-Content-Type-Options: nosniff` and serve module JS as `application/javascript; charset=UTF-8`.
+- For a Laravel-only admin package, requiring `laravel/framework` is clearer than relying on partial Illuminate packages when Blade helpers, views, Gate, routes, and CSRF helpers are runtime requirements.
+- Listing endpoints with `LIKE` filters should validate query parameters before building queries, including length limits and pagination bounds.
+- Do not resolve package-relative files from Blade with `__DIR__`; compiled Blade templates run from the view cache. Resolve package asset paths in PHP classes using source-relative paths and pass URLs into the view.
+- Empty API pagination responses should come from Laravel paginator objects when available responses also use paginator `toArray()`, otherwise consumers get subtly different schemas.
+- Composer repositories declared by a dependency package are ignored by host apps. Until `padosoft/laravel-pii-redactor` is available from the host's normal repositories, install docs/fresh-host verification must add the core VCS repository at the host root.
+- Do not both `loadMigrationsFrom()` and `publishesMigrations()` the same package migration when docs instruct hosts to publish migrations; fresh hosts will run the package migration and the timestamped published copy.
+- Fresh-host install verification should run in CI, not only manually, because installable package regressions often happen outside package Testbench coverage.
+- CI scripts should parse `php artisan route:list --json`; the human table output can truncate route names on Linux and cause false failures.
+- `Start-Process -WindowStyle Hidden` is Windows-only in PowerShell Core. Cross-platform CI scripts should add `WindowStyle` conditionally when running on Windows.
+- Security projection tests should use missing-key/path assertions for forbidden fields. Value-specific `assertJsonMissing(['secret_key' => 'one-value'])` can still pass when the key leaks with a different value.
+- Fresh-host release verification should pin the supported Laravel skeleton major (currently `laravel/laravel:^13`) so future Laravel majors do not break CI before support is intentionally added.
+- Playwright `baseURL` and Vite `webServer.command` must agree on a strict port; otherwise Vite can silently choose another port while tests still target the old one.

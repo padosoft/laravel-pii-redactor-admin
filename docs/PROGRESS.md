@@ -1,0 +1,216 @@
+# Progress
+
+## 2026-05-06
+
+- Started from an almost empty repository containing only README, LICENSE, and untracked `resources/screenshots/*.png` design references.
+- Added Laravel package scaffold, service provider, disabled-by-default config, routes, audit migration/model, safe backend controllers, Blade shell, React/Vite UI, and initial PHPUnit coverage.
+- Added durable repo rules requiring PHPUnit, Vitest, Playwright, Vite build, typecheck, and GitHub Actions to pass before any task is considered closed.
+- Added GitHub Actions CI for Composer validate/install, PHPUnit, npm ci, typecheck, Vitest, Vite build, and Playwright.
+- Added Vitest API-client coverage for same-origin, CSRF, and error normalization.
+- Added Playwright UI/UX scenarios for overview navigation, command shortcut, playground scan/redact, raw-samples disabled state, token-map non-disclosure, detokenise arm/reveal flow, detectors, custom rules, settings, and mobile overflow.
+- Local gates passed after final verification:
+  - `composer install --no-interaction --prefer-dist`
+  - `npm ci`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 7 tests, 16 assertions
+  - `npm run typecheck`
+  - `npm run test` => 3 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 8 tests
+- `composer install --no-interaction --prefer-dist` initially completed downloads/extraction but hit a Windows permission error while writing `vendor/composer/installed.php`; a later retry passed cleanly after `composer dump-autoload -o`.
+- Created branch `roadmap/admin-api-hardening` from the dirty local scaffold worktree to preserve all existing uncommitted changes.
+- Completed API hardening slice:
+  - Audit-event API now validates filters and uses an explicit safe select list.
+  - Audit count metadata is sanitized before persistence.
+  - Added PHPUnit coverage for scan/redact audit storage, detokenise validation, detokenise success audit non-persistence, and audit listing filters/projection.
+  - Quick baseline and post-change `vendor/bin/phpunit` passed; post-change result: 11 tests, 42 assertions.
+- Completed React design-system/admin-pages slice:
+  - Added reusable metric, empty-state, notice, and safe data-table primitives.
+  - Audit log and token map now have compact operational filters with apply/reset flows.
+  - Detokenise reveal state now disarms when text, justification, or confirmation changes and reports API errors inline.
+  - Added Vitest coverage for query-string construction and Playwright coverage for audit/token filter flows plus detokenise re-arm behavior.
+  - `npm run typecheck`, `npm run test`, and `npm run e2e -- --reporter=line` passed after the UI changes; e2e result: 10 tests.
+- Added safe demo fixtures in `resources/demo/admin-api-fixtures.json`, reused them in Playwright, and documented installation, authorization, and demo fixture usage in `README.md`.
+- After fixture extraction, `npm run typecheck`, `npm run test`, and `npm run e2e -- --reporter=line` passed. Playwright initially failed because Node required a JSON import attribute; fixed by loading the fixture with `createRequire`.
+- Opened GitHub PR #1: https://github.com/padosoft/laravel-pii-redactor-admin/pull/1
+- Normal Copilot Code Review request via `gh pr edit 1 --add-reviewer copilot` failed with `Could not resolve user with login 'copilot'`; the durable fallback is now documented in `skills/copilot-pr-review-loop/SKILL.md` using GraphQL `requestReviewsByLogin` with `copilot-pull-request-reviewer[bot]`.
+- GitHub Actions initially failed during `composer install` on PHP 8.3 because `composer.lock` had Symfony 8 packages requiring PHP >=8.4. Fixed by setting Composer platform PHP to 8.3.30 and regenerating the lock to Symfony 7.4-compatible packages.
+- GitHub Actions then failed at PHPUnit because `phpunit.xml` referenced a missing `tests/Unit` directory on Linux. Removed the empty Unit testsuite from the config.
+- Post-CI-fix local gates passed again:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 11 tests, 42 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 10 tests
+- GitHub Actions for PR #1 passed after the PHP 8.3 lockfile and PHPUnit testsuite fixes.
+- Imported the Copilot Code Review operating procedure from `padosoft-laravel-flow` into this repo:
+  - Added `skills/copilot-pr-review-loop/SKILL.md`.
+  - Added `.claude/rules/rule-copilot-pr-review-loop.md`.
+  - Linked the flow from `AGENTS.md`, `CLAUDE.md`, `docs/RULES.md`, and `.github/copilot-instructions.md`.
+  - Recorded the GraphQL fallback and verification steps in `docs/LESSON.md`.
+- Post-Copilot-procedure docs local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 11 tests, 42 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 10 tests
+- GraphQL Copilot request succeeded for PR #1 with `copilot-pull-request-reviewer[bot]`; `requested_reviewers` showed `Copilot`.
+- Addressed automated review finding about installable package assets:
+  - Vite now builds package assets into `resources/dist`.
+  - Added `PackageAssetController` and an authenticated admin asset route.
+  - Blade shell now reads the package manifest instead of the host app Vite manifest.
+  - README documents that host apps do not need to register this package's Vite inputs.
+  - Added PHPUnit coverage for serving the compiled package JS asset.
+- Post-asset-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 12 tests, 46 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 10 tests
+- Copilot Code Review responded on PR #1 with actionable comments. Addressed:
+  - Gate callbacks now use `Gate::forUser($request->user())->inspect($ability)` without passing the user as an extra argument.
+  - Audit `target_hash` now uses keyed HMAC-SHA256 instead of plain SHA-256.
+  - Status package version now reads from Composer `InstalledVersions` when installed.
+  - Added PHPUnit regression coverage for gate argument shape and keyed audit hashes.
+- After network resumed, checked live PR state and addressed the remaining Copilot comments:
+  - Audit `actor_id` migration/model writes now support string identifiers such as UUID/ULID.
+  - Composer root repository now uses the remote `padosoft/laravel-pii-redactor` VCS repository instead of requiring a sibling path checkout; lock resolves to `padosoft/laravel-pii-redactor` v1.2.0.
+  - Token-map search now uses an explicit SQL `ESCAPE` clause for literal `%` and `_` matching.
+  - Admin shell display name uses safe data access and falls back to `Operator` for custom auth users.
+  - Middleware config trims comma-separated env entries.
+  - Added PHPUnit coverage for string actor IDs, literal token-map wildcard search, and custom auth user shell rendering.
+- Copilot re-review produced two follow-up comments. Addressed:
+  - Blade shell now normalizes failed manifest JSON decode to an empty manifest array before indexing.
+  - CI no longer checks out the core package as an unused sibling path now that Composer installs it from the remote/VCS repository.
+- Post-Copilot-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 16 tests, 59 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 10 tests
+- Copilot re-review produced three follow-up comments about unhandled registry/settings fetch failures in the React admin:
+  - Detectors, custom-rules, and settings pages now handle API failures with inline error notices and loading/empty states.
+  - Added Playwright coverage for surfaced API errors on those read-only admin pages.
+- Post-read-only-fetch-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 16 tests, 59 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Copilot re-review on commit `f5bef9a` completed and produced five new backend comments. Addressed:
+  - Redact strategy validation now uses the same `RedactionStrategyFactory::names()` source advertised by status.
+  - Token-map unavailable responses now keep a stable `maps` pagination shape.
+  - Token-map schema checks now use the configured/default database connection schema builder instead of `Schema::getFacadeRoot()`.
+  - Audit migration now indexes the `event_type`/`status_code` filter path.
+  - Added PHPUnit coverage for advertised strategies and unavailable token-map response shape.
+- Post-backend-Copilot-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 18 tests, 77 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Copilot re-review on commit `fdcc560` completed and produced four new comments. Addressed:
+  - Package asset responses now send `X-Content-Type-Options: nosniff` and serve JS as `application/javascript; charset=UTF-8`.
+  - Composer runtime dependency now targets `laravel/framework` so Blade helpers, view rendering, Gate, and other Laravel runtime bindings are explicit for installs.
+  - Design reference directory was renamed from `resources/screenshoots` to `resources/screenshots` and docs were updated.
+- Post-asset-dependency-design-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 18 tests, 79 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Copilot re-review on commit `c79717c` completed and produced one new token-map comment. Addressed:
+  - Token-map `search`, `detector`, and `per_page` query params are now validated before query construction.
+  - Added PHPUnit coverage for oversized token-map filters and invalid pagination size.
+- Post-token-map-validation-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 19 tests, 88 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Copilot re-review on commit `d225b16` completed and produced two new comments. Addressed:
+  - Admin shell asset manifest resolution moved out of Blade and into `AdminShellController` using a package-relative path.
+  - Token-map unavailable responses now use `LengthAwarePaginator::toArray()` for the same pagination schema as available responses.
+  - Added PHPUnit coverage for shell asset URLs and full empty paginator keys.
+- Post-shell-asset-paginator-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 93 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Fresh Laravel 13 host verification started in sibling temp app `laravel-pii-redactor-admin-host-verify`:
+  - `composer create-project laravel/laravel` installed Laravel skeleton v13.5.0 with `laravel/framework` v13.8.0.
+  - Initial `composer require padosoft/laravel-pii-redactor-admin:@dev` with only the admin path repository failed because Composer root apps do not inherit dependency repository definitions and could not resolve `padosoft/laravel-pii-redactor`.
+  - After adding the core VCS repository to the host root (`https://github.com/padosoft/laravel-pii-redactor`), Composer installed `padosoft/laravel-pii-redactor` v1.2.0 and this admin package from the local path.
+  - Publishing admin migrations plus package autoloaded migrations caused a duplicate `pii_redactor_admin_audit_events` table migration in the fresh host. The service provider now only publishes migrations; package tests explicitly load the package migration through Testbench.
+  - Recreated the Laravel 13 host from scratch after the migration fix. Install, config publish, migration publish, `.env` enablement, `php artisan migrate --force`, and `route:list --path=pii-redactor-admin` all passed.
+  - HTTP smoke via PHP built-in server passed: `/pii-redactor-admin` 200 with runtime config, `/pii-redactor-admin/api/status` 200 with package version, package JS/CSS asset routes 200 with `application/javascript`/`text/css` and `X-Content-Type-Options: nosniff`.
+- Post-fresh-host-fix local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 93 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Started release-readiness automation slice:
+  - Added `scripts/verify-fresh-laravel-host.ps1` to create a fresh Laravel 13 host, install the package from the current checkout, publish config/migrations, migrate, verify admin routes, and smoke-test shell/API/assets.
+  - Added the fresh-host verification script to GitHub Actions after Playwright.
+  - Added `docs/RELEASE.md` and linked it from `README.md`.
+- Post-release-readiness-automation local verification passed:
+  - `powershell -ExecutionPolicy Bypass -File scripts\verify-fresh-laravel-host.ps1`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 93 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- GitHub Actions failed on the first fresh-host script run because route validation parsed the human `route:list` table output, which is truncated on Linux. The script now uses `php artisan route:list --json` and validates route names from JSON.
+- Post-route-json-script-fix local verification passed:
+  - `powershell -ExecutionPolicy Bypass -File scripts\verify-fresh-laravel-host.ps1`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 93 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- GitHub Actions failed again in the fresh-host smoke step because Linux PowerShell Core does not support `Start-Process -WindowStyle Hidden`. The verification script now only passes `WindowStyle=Hidden` on Windows while keeping the same hidden background process behavior for Windows runs.
+- Post-cross-platform-windowstyle script verification passed locally:
+  - `powershell -ExecutionPolicy Bypass -File scripts\verify-fresh-laravel-host.ps1`
+- Post-cross-platform-windowstyle local gates passed:
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 93 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- GitHub Actions passed on commit `63b013a`, then Copilot reviewed the same commit and found two test-hardening issues. Addressed:
+  - Status safe snapshot tests now assert missing secret keys by JSON path, not by one exact forbidden value.
+  - Token-map and audit projection tests now assert missing forbidden fields by JSON path.
+- Post-Copilot-test-hardening local verification passed:
+  - `powershell -ExecutionPolicy Bypass -File scripts\verify-fresh-laravel-host.ps1`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 94 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- Copilot re-review after commit `f84ced8` found two release-readiness determinism issues. Addressed:
+  - Fresh-host verification now pins `composer create-project` to `laravel/laravel:^13`.
+  - Playwright's Vite web server now uses `--port 5173 --strictPort` to match the configured `baseURL`.
+- Post-release-determinism local verification passed:
+  - `powershell -ExecutionPolicy Bypass -File scripts\verify-fresh-laravel-host.ps1`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 94 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
