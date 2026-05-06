@@ -1,0 +1,14 @@
+/vendor/
+/node_modules/
+/public/build/
+/test-results/
+/playwright-report/
+/storage/logs/*.log
+/.phpunit.cache/
+/.phpunit.result.cache
+/.env
+/.env.*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

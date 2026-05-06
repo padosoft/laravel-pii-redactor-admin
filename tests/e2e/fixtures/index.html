@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="test-token">
+  <title>PII Redactor Admin Test</title>
+  <script>
+    window.PII_REDACTOR_ADMIN = {
+      apiBase: 'http://127.0.0.1:5173/pii-redactor-admin/api',
+      csrfToken: 'test-token',
+      routePrefix: 'pii-redactor-admin',
+      userDisplay: 'Test Operator',
+      abilities: { view: true, detokenise: true, rawSamples: false }
+    };
+  </script>
+</head>
+<body>
+  <div id="pii-redactor-admin-root"></div>
+  <script type="module" src="/resources/js/app.tsx"></script>
+</body>
+</html>

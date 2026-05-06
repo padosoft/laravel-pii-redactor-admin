@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout admin
+        uses: actions/checkout@v4
+        with:
+          path: laravel-pii-redactor-admin
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: laravel-pii-redactor-admin/package-lock.json
+
+      - name: Install Composer dependencies
+        working-directory: laravel-pii-redactor-admin
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate Composer
+        working-directory: laravel-pii-redactor-admin
+        run: composer validate --strict
+
+      - name: Run PHPUnit
+        working-directory: laravel-pii-redactor-admin
+        run: vendor/bin/phpunit
+
+      - name: Install Node dependencies
+        working-directory: laravel-pii-redactor-admin
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: laravel-pii-redactor-admin
+        run: npm run typecheck
+
+      - name: Vitest
+        working-directory: laravel-pii-redactor-admin
+        run: npm run test
+
+      - name: Vite build
+        working-directory: laravel-pii-redactor-admin
+        run: npm run build
+
+      - name: Install Playwright
+        working-directory: laravel-pii-redactor-admin
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright
+        working-directory: laravel-pii-redactor-admin
+        run: npm run e2e
+
+      - name: Fresh Laravel host install smoke
+        shell: pwsh
+        working-directory: laravel-pii-redactor-admin
+        run: ./scripts/verify-fresh-laravel-host.ps1 -PackagePath "$PWD" -WorkDir "$env:RUNNER_TEMP/pii-redactor-admin-host"
