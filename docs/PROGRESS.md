@@ -265,3 +265,8 @@
 - Started package asset security coverage slice:
   - Added PHPUnit coverage for CSS package asset content type, `nosniff`, immutable cache directives, missing asset 404, and path traversal 404.
   - Focused `vendor/bin/phpunit --filter EnabledServiceProviderTest` passed with 6 tests and 30 assertions.
+- PR #5 (`roadmap/package-asset-security-coverage`) passed local gates and GitHub Actions. Copilot was requested and the PR timeline showed `copilot_work_started`, but no completed review/comments/threads arrived after repeated polling; per operator automode instruction, the small test-hardening PR was squash-merged.
+- `main` GitHub Actions run `25450977941` passed after PR #5, including fresh Laravel host install smoke.
+- Started final roadmap ledger slice:
+  - Marked `docs/IMPLEMENTATION_PLAN.md` as complete for the current roadmap.
+  - Clarified that `v1.0.1` is the current runtime release and PR #5 was test hardening without runtime behavior changes.

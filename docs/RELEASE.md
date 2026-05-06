@@ -40,4 +40,6 @@ git tag -a v1.0.1 -m "Release v1.0.1"
 git push origin v1.0.1
 ```
 
+`v1.0.1` is the current runtime release. PR #5 added package asset route test hardening after `v1.0.1` without changing runtime package behavior; it does not require a new runtime tag by itself.
+
 Do not tag while GitHub Actions, Copilot review, or any review thread is pending.

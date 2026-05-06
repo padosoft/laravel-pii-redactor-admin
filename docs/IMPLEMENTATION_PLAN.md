@@ -59,3 +59,13 @@ npm run e2e
 ```
 
 If CI/Copilot/GitHub access is blocked, record exact next steps in `docs/PROGRESS.md`.
+
+## Completion Status
+
+As of `v1.0.1` and the subsequent package asset coverage hardening, the roadmap scope is implemented:
+
+- Backend API surface, authorization, audit, token-map, detokenise, and raw-sample security coverage are in place.
+- React admin shell, design-system primitives, and all planned admin pages are implemented and covered by Vitest/Playwright.
+- Demo fixtures, README, release notes, Copilot review loop rules, and CI are documented.
+- Fresh Laravel 13 host install verification runs locally and in GitHub Actions.
+- Release readiness is complete for the shipped runtime; later work should be treated as a new roadmap or maintenance issue.
