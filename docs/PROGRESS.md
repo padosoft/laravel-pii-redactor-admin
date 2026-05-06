@@ -246,3 +246,12 @@
   - `npm run test` => 4 tests
   - `npm run build`
   - `npm run e2e -- --reporter=line` => 12 tests
+- Started frontend/toolchain modernization slice on `roadmap/frontend-toolchain-modernization`:
+  - Updated npm dependencies to current versions; `npm outdated --json` now returns `{}`.
+  - Kept Vite and `@vitejs/plugin-react` on current latest versions.
+  - Updated React/React DOM to 19.2.6, TypeScript to 6.0.3, Playwright to 1.59.1, Vitest to 4.1.5, jsdom to 29.1.1, lucide-react to 1.14.0, and React type packages/testing-library patches.
+  - Updated TypeScript config from deprecated `moduleResolution: "Node"` to Vite-appropriate `moduleResolution: "Bundler"`.
+  - Updated GitHub Actions from `actions/checkout@v4`/`actions/setup-node@v4` to v6 and moved CI Node to 24.
+  - Added explicit `@emnapi/core` and `@emnapi/runtime` dev dependencies because Linux `npm ci` required those optional peer packages from the updated wasm runtime graph even though Windows `npm ci` passed without them.
+  - `npm ci`, `npm run typecheck`, `npm run test`, `npm run build`, and `npm run e2e -- --reporter=line` passed after the update.
+  - Fresh Laravel 13 host verification passed from the updated checkout.
