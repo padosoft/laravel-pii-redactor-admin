@@ -234,3 +234,15 @@
   - `npm run test` => 4 tests
   - `npm run build`
   - `npm run e2e -- --reporter=line` => 12 tests
+- PR #2 conflict resolution:
+  - Merged `origin/main` after PR #1 was squashed into main.
+  - Resolved add/add conflicts in `AGENTS.md`, `docs/RULES.md`, `docs/LESSON.md`, `docs/PROGRESS.md`, `.claude/rules/rule-copilot-pr-review-loop.md`, and `skills/copilot-pr-review-loop/SKILL.md`.
+  - Kept main's bootstrap state plus the PR #2 additions for `copilot_work_started`, no duplicate Copilot requests per head SHA, and small follow-up PRs.
+- Post-conflict-resolution local gates passed:
+  - `python .../skill-creator/scripts/quick_validate.py skills/copilot-pr-review-loop`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 94 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
