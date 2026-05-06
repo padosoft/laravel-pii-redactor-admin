@@ -270,3 +270,13 @@
 - Started final roadmap ledger slice:
   - Marked `docs/IMPLEMENTATION_PLAN.md` as complete for the current roadmap.
   - Clarified that `v1.0.1` is the current runtime release and PR #5 was test hardening without runtime behavior changes.
+- Started final distribution/docs slice:
+  - Verified `padosoft/laravel-pii-redactor-admin` is not available from Composer/Packagist (`composer show padosoft/laravel-pii-redactor-admin --all` returned package not found).
+  - Verified no `PACKAGIST` or `COMPOSER_AUTH` credentials are present in the local environment, so API publication is blocked in this shell.
+  - Confirmed the GitHub repository is public at `https://github.com/padosoft/laravel-pii-redactor-admin`.
+  - Confirmed the core repository is linked in `composer.json` as `https://github.com/padosoft/laravel-pii-redactor`.
+  - Added Composer `homepage` and `support` metadata for the admin repository so Packagist can expose source/issues links after publication.
+  - Confirmed screenshot design references exist under normalized `resources/screenshots` with 8 PNG files; the old misspelled `resources/screenshoots` path is not present.
+  - Updated README with a table of contents, core package link, Packagist/direct-install notes, local path install notes, screenshots, and release section.
+  - Documented Packagist requirements and `v1.0.2` tagging in `docs/RELEASE.md`.
+  - Addressed Codex review on PR #7 by documenting the two distinct pre-Packagist install paths: admin-on-Packagist/core-missing requires the core repository, while both-missing requires both core and admin repositories before `composer require`.

@@ -1,6 +1,17 @@
 # Laravel PII Redactor Admin
 
-Installable Laravel 13 admin console for `padosoft/laravel-pii-redactor`.
+Installable Laravel 13 admin console for [`padosoft/laravel-pii-redactor`](https://github.com/padosoft/laravel-pii-redactor).
+
+## Table Of Contents
+
+- [Status](#status)
+- [Screenshots](#screenshots)
+- [Security Model](#security-model)
+- [Installation](#installation)
+- [Authorization](#authorization)
+- [Demo Fixtures](#demo-fixtures)
+- [Verification](#verification)
+- [Release](#release)
 
 ## Status
 
@@ -18,6 +29,21 @@ Default abilities:
 - `detokenisePiiRedactor`
 - `viewPiiRedactorRawSamples`
 
+## Screenshots
+
+Design references are committed under [`resources/screenshots`](resources/screenshots). The original misspelled `resources/screenshoots` directory was normalized to `resources/screenshots`.
+
+| Page | Preview |
+| --- | --- |
+| Dashboard | ![Dashboard](resources/screenshots/Laravel-pii-redactor-admin-dashboard.png) |
+| Dark dashboard | ![Dark dashboard](resources/screenshots/Laravel-pii-redactor-admin-dashboard-dark.png) |
+| Playground | ![Playground](resources/screenshots/Laravel-pii-redactor-admin-playground.png) |
+| Token map | ![Token map](resources/screenshots/Laravel-pii-redactor-admin-tokenmap.png) |
+| Audit logs | ![Audit logs](resources/screenshots/Laravel-pii-redactor-admin-logs.png) |
+| Detokenise | ![Detokenise](resources/screenshots/Laravel-pii-redactor-admin-detokenize.png) |
+| Detectors | ![Detectors](resources/screenshots/Laravel-pii-redactor-admin-detectors.png) |
+| Custom rules | ![Custom rules](resources/screenshots/Laravel-pii-redactor-admin-custom-rules.png) |
+
 ## Security Model
 
 - Token-map listing never selects or serializes token originals.
@@ -27,7 +53,13 @@ Default abilities:
 
 ## Installation
 
-If `padosoft/laravel-pii-redactor` is not available from your configured Composer repositories, add the core package repository in the host app first:
+When both packages are available from Packagist, installation is direct:
+
+```bash
+composer require padosoft/laravel-pii-redactor-admin
+```
+
+If this admin package is available from Packagist but the core package is not, add only the core package repository in the host app first:
 
 ```bash
 composer config repositories.pii-redactor vcs https://github.com/padosoft/laravel-pii-redactor
@@ -35,6 +67,25 @@ composer config repositories.pii-redactor vcs https://github.com/padosoft/larave
 
 ```bash
 composer require padosoft/laravel-pii-redactor-admin
+php artisan vendor:publish --tag=pii-redactor-admin-config
+php artisan vendor:publish --tag=pii-redactor-admin-migrations
+php artisan migrate
+```
+
+If neither package is available from Packagist yet, add both repositories before requiring the admin package:
+
+```bash
+composer config repositories.pii-redactor vcs https://github.com/padosoft/laravel-pii-redactor
+composer config repositories.pii-redactor-admin vcs https://github.com/padosoft/laravel-pii-redactor-admin
+composer require padosoft/laravel-pii-redactor-admin
+```
+
+For local development of this admin package from a checkout:
+
+```bash
+composer config repositories.pii-redactor vcs https://github.com/padosoft/laravel-pii-redactor
+composer config repositories.pii-redactor-admin path /absolute/path/to/laravel-pii-redactor-admin
+composer require padosoft/laravel-pii-redactor-admin:@dev
 php artisan vendor:publish --tag=pii-redactor-admin-config
 php artisan vendor:publish --tag=pii-redactor-admin-migrations
 php artisan migrate
@@ -82,3 +133,9 @@ Fresh host install verification can be run from the package root:
 ```
 
 Release readiness notes live in `docs/RELEASE.md`.
+
+## Release
+
+Current runtime release: [`v1.0.1`](https://github.com/padosoft/laravel-pii-redactor-admin/releases/tag/v1.0.1).
+
+`v1.0.2` is reserved for the final docs/test-hardening ledger after `v1.0.1`.
