@@ -258,3 +258,10 @@
 - PR #3 (`roadmap/frontend-toolchain-modernization`) passed GitHub Actions on the updated head and Copilot Code Review completed with no comments.
 - PR #3 was squash-merged to `main` at `e1cc478`; the follow-up `main` GitHub Actions run `25449401679` passed, including fresh Laravel host install smoke.
 - Started release-readiness patch slice for `v1.0.1` because the existing `v1.0.0` tag points to the pre-toolchain-modernization commit.
+- PR #4 (`roadmap/release-readiness-v1.0.1`) passed local gates, GitHub Actions, and Copilot Code Review with no comments, then was squash-merged to `main` at `3eaf820`.
+- `main` GitHub Actions run `25449685559` passed after PR #4, including fresh Laravel host install smoke.
+- Created and pushed tag `v1.0.1`; tag GitHub Actions run `25449791364` passed, including fresh Laravel host install smoke.
+- Published GitHub Release `v1.0.1`.
+- Started package asset security coverage slice:
+  - Added PHPUnit coverage for CSS package asset content type, `nosniff`, immutable cache directives, missing asset 404, and path traversal 404.
+  - Focused `vendor/bin/phpunit --filter EnabledServiceProviderTest` passed with 6 tests and 30 assertions.
