@@ -33,7 +33,11 @@ If a gate cannot run, record the exact blocker in `docs/PROGRESS.md`. Do not cal
 - Every PR requires GitHub Copilot Code Review plus green GitHub Actions.
 - If `gh pr edit <PR> --add-reviewer copilot` fails, use the GraphQL fallback in `skills/copilot-pr-review-loop/SKILL.md` with `copilot-pull-request-reviewer[bot]`.
 - Verify Copilot was actually requested via `gh api repos/<owner>/<repo>/pulls/<PR>/requested_reviewers`; do not assume a failed or silent reviewer command engaged Copilot.
+- Verify whether Copilot has started work through the PR issue timeline. The UI message "Copilot started reviewing on behalf of ..." corresponds to a `copilot_work_started` event from `gh api repos/<owner>/<repo>/issues/<PR>/timeline --paginate`.
+- If `copilot_work_started` exists after the latest review request, Copilot is running. Wait for the resulting review instead of removing/re-requesting the reviewer or declaring a blocker.
+- Do not request Copilot repeatedly for the same head SHA once `copilot_work_started` exists; overlapping review requests can stack up and make the PR state harder to reason about.
 - Check reviews, inline comments, and review threads before deciding Copilot has responded or has no actionable feedback.
+- Prefer small, roadmap-scoped PRs. Large scaffold PRs are acceptable only for initial bootstrap; follow-up work should be split into focused slices with their own gates and review loop.
 
 ## Security Rules
 

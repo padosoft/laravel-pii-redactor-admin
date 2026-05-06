@@ -70,6 +70,25 @@ gh api "repos/$repo/pulls/<PR>/requested_reviewers"
 
 The response should show Copilot as a requested reviewer. If it does not, Copilot was not actually engaged; retry the GraphQL request or record the exact blocker in `docs/PROGRESS.md`.
 
+## Check Whether Copilot Started
+
+Do not infer "not running" from the absence of a new review. GitHub records the UI message "Copilot started reviewing on behalf of ..." as a timeline event:
+
+```powershell
+gh api "repos/$repo/issues/<PR>/timeline" --paginate `
+  --jq '.[] | select(.event=="review_requested" or .event=="copilot_work_started" or .event=="reviewed") | {event,actor:(.actor.login // null),created_at,commit_id:(.commit_id // null),body:(.body // null)}'
+```
+
+Interpretation:
+
+- `review_requested` means GitHub accepted the review request.
+- `copilot_work_started` means Copilot is actively reviewing; wait for a `reviewed` event/review body instead of re-requesting or calling it blocked.
+- `reviewed` with author/body from Copilot is the completed review. Then inspect inline comments and review threads.
+
+If `copilot_work_started` appears after the latest request and no `reviewed` event exists yet, keep polling at practical intervals. Do not remove/re-add Copilot unless there is no `copilot_work_started` after a reasonable wait or GitHub reports an API error.
+
+Do not request another Copilot review for the same head SHA after `copilot_work_started`. Repeated requests can overlap and create confusing duplicated pending work. Wait for the completed `reviewed` event or a concrete GitHub error.
+
 ## Check Whether Copilot Responded
 
 Review summaries:
@@ -149,6 +168,8 @@ gh run view <run-id> --log-failed
 ```
 
 Fix failures locally, run all required local gates, commit, push, then repeat Copilot + CI verification.
+
+Keep PRs small after the initial bootstrap. A good PR should represent one roadmap slice, one security hardening pass, or one focused UI/backend feature so review comments stay actionable and the retry loop remains bounded.
 
 ## Resolving Feedback
 
