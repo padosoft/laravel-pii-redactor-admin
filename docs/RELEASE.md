@@ -33,4 +33,11 @@ git tag -a v1.0.0 -m "Release v1.0.0"
 git push origin v1.0.0
 ```
 
+For verified patch releases after the first stable tag:
+
+```bash
+git tag -a v1.0.1 -m "Release v1.0.1"
+git push origin v1.0.1
+```
+
 Do not tag while GitHub Actions, Copilot review, or any review thread is pending.
