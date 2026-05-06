@@ -24,13 +24,33 @@ final class EnabledServiceProviderTest extends TestCase
 
     public function test_package_assets_are_served_from_package_dist(): void
     {
-        $manifest = json_decode((string) file_get_contents(__DIR__.'/../../resources/dist/.vite/manifest.json'), true);
-        $asset = $manifest['resources/js/app.tsx']['file'];
+        $asset = $this->distManifest()['resources/js/app.tsx']['file'];
 
-        $this->get('/pii-redactor-admin/assets/'.$asset)
+        $response = $this->get('/pii-redactor-admin/assets/'.$asset)
             ->assertOk()
             ->assertHeader('content-type', 'application/javascript; charset=UTF-8')
             ->assertHeader('x-content-type-options', 'nosniff');
+
+        $this->assertImmutableCacheHeader((string) $response->headers->get('cache-control'));
+    }
+
+    public function test_package_css_assets_are_served_with_safe_headers(): void
+    {
+        $asset = $this->distManifest()['resources/css/admin.css']['file'];
+
+        $response = $this->get('/pii-redactor-admin/assets/'.$asset)
+            ->assertOk()
+            ->assertHeader('content-type', 'text/css; charset=UTF-8')
+            ->assertHeader('x-content-type-options', 'nosniff');
+
+        $this->assertImmutableCacheHeader((string) $response->headers->get('cache-control'));
+    }
+
+    public function test_package_assets_reject_missing_files_and_path_traversal(): void
+    {
+        $this->get('/pii-redactor-admin/assets/assets/missing.js')->assertNotFound();
+        $this->get('/pii-redactor-admin/assets/../.env')->assertNotFound();
+        $this->get('/pii-redactor-admin/assets/%2e%2e/.env')->assertNotFound();
     }
 
     public function test_shell_renders_for_custom_user_without_name_or_email(): void
@@ -44,7 +64,7 @@ final class EnabledServiceProviderTest extends TestCase
 
     public function test_shell_loads_package_assets_from_controller_resolved_manifest(): void
     {
-        $manifest = json_decode((string) file_get_contents(__DIR__.'/../../resources/dist/.vite/manifest.json'), true);
+        $manifest = $this->distManifest();
         $jsAsset = $manifest['resources/js/app.tsx']['file'];
         $cssAsset = $manifest['resources/css/admin.css']['file'];
 
@@ -52,5 +72,24 @@ final class EnabledServiceProviderTest extends TestCase
             ->assertOk()
             ->assertSee('/pii-redactor-admin/assets/'.$jsAsset, false)
             ->assertSee('/pii-redactor-admin/assets/'.$cssAsset, false);
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function distManifest(): array
+    {
+        $manifest = json_decode((string) file_get_contents(__DIR__.'/../../resources/dist/.vite/manifest.json'), true);
+
+        $this->assertIsArray($manifest);
+
+        return $manifest;
+    }
+
+    private function assertImmutableCacheHeader(string $header): void
+    {
+        $this->assertStringContainsString('public', $header);
+        $this->assertStringContainsString('max-age=31536000', $header);
+        $this->assertStringContainsString('immutable', $header);
     }
 }
