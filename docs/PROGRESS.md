@@ -255,3 +255,6 @@
   - Added explicit `@emnapi/core` and `@emnapi/runtime` dev dependencies because Linux `npm ci` required those optional peer packages from the updated wasm runtime graph even though Windows `npm ci` passed without them.
   - `npm ci`, `npm run typecheck`, `npm run test`, `npm run build`, and `npm run e2e -- --reporter=line` passed after the update.
   - Fresh Laravel 13 host verification passed from the updated checkout.
+- PR #3 (`roadmap/frontend-toolchain-modernization`) passed GitHub Actions on the updated head and Copilot Code Review completed with no comments.
+- PR #3 was squash-merged to `main` at `e1cc478`; the follow-up `main` GitHub Actions run `25449401679` passed, including fresh Laravel host install smoke.
+- Started release-readiness patch slice for `v1.0.1` because the existing `v1.0.0` tag points to the pre-toolchain-modernization commit.
