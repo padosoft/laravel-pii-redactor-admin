@@ -214,3 +214,35 @@
   - `npm run test` => 4 tests
   - `npm run build`
   - `npm run e2e -- --reporter=line` => 12 tests
+- GitHub Actions passed on commit `e9113e3`.
+- All previously actionable Copilot review threads were resolved after verifying the addressed code.
+- Corrected Copilot status interpretation:
+  - I initially misread the absence of a completed review on commit `e9113e3` as a Copilot blocker because I checked requested reviewers, reviews, comments, and review threads but not the issue timeline.
+  - The PR timeline shows `review_requested` at `2026-05-06T14:54:43Z`, `copilot_work_started` at `2026-05-06T14:55:34Z`, another `review_requested` at `2026-05-06T15:02:12Z`, and another `copilot_work_started` at `2026-05-06T15:03:11Z`.
+  - Therefore Copilot was engaged and actively reviewing; the right action is to wait for the resulting `reviewed` event/review body, not to call it blocked.
+  - AGENTS, the Copilot review skill, the Claude rule, and lessons were updated to require checking the PR issue timeline for `copilot_work_started`.
+- PR #1 was merged after CI was green and the branch was clean, per operator instruction, because the repeated Copilot requests had overlapped while the status-detection bug was being corrected.
+- Started follow-up small PR slice `roadmap/copilot-review-loop-rules`:
+  - Codified that `copilot_work_started` means wait, not retry.
+  - Codified that Copilot must not be requested repeatedly for the same head SHA.
+  - Added the standing rule to keep future roadmap PRs small and focused after bootstrap.
+- Post-Copilot-review-loop-rules local gates passed:
+  - `python .../skill-creator/scripts/quick_validate.py skills/copilot-pr-review-loop`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 94 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
+- PR #2 conflict resolution:
+  - Merged `origin/main` after PR #1 was squashed into main.
+  - Resolved add/add conflicts in `AGENTS.md`, `docs/RULES.md`, `docs/LESSON.md`, `docs/PROGRESS.md`, `.claude/rules/rule-copilot-pr-review-loop.md`, and `skills/copilot-pr-review-loop/SKILL.md`.
+  - Kept main's bootstrap state plus the PR #2 additions for `copilot_work_started`, no duplicate Copilot requests per head SHA, and small follow-up PRs.
+- Post-conflict-resolution local gates passed:
+  - `python .../skill-creator/scripts/quick_validate.py skills/copilot-pr-review-loop`
+  - `composer validate --strict`
+  - `vendor/bin/phpunit` => 20 tests, 94 assertions
+  - `npm run typecheck`
+  - `npm run test` => 4 tests
+  - `npm run build`
+  - `npm run e2e -- --reporter=line` => 12 tests
