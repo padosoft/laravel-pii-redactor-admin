@@ -24,6 +24,23 @@ GitHub Actions must also pass, including the fresh Laravel host install smoke.
 - Confirm README installation notes mention the core package Composer repository requirement when the core package is not available from the host's configured repositories.
 - Run `scripts/verify-fresh-laravel-host.ps1` from the package root against a fresh Laravel 13 host.
 
+## Packagist
+
+Packagist publication is required before host apps can install with only:
+
+```bash
+composer require padosoft/laravel-pii-redactor-admin
+```
+
+Both packages must be indexed by Packagist:
+
+- `padosoft/laravel-pii-redactor`
+- `padosoft/laravel-pii-redactor-admin`
+
+Composer ignores repositories declared by dependencies, so publishing only the admin package is not enough while the core package is unavailable from the host app's configured repositories.
+
+If Packagist API credentials are available in the environment, submit or update packages through Packagist's API. Without credentials, record the blocker in `docs/PROGRESS.md` and publish manually from the Packagist UI.
+
 ## Tagging
 
 Use semantic versioning. For the first stable release:
@@ -41,5 +58,12 @@ git push origin v1.0.1
 ```
 
 `v1.0.1` is the current runtime release. PR #5 added package asset route test hardening after `v1.0.1` without changing runtime package behavior; it does not require a new runtime tag by itself.
+
+For the final docs/test-hardening ledger after `v1.0.1`:
+
+```bash
+git tag -a v1.0.2 -m "Release v1.0.2"
+git push origin v1.0.2
+```
 
 Do not tag while GitHub Actions, Copilot review, or any review thread is pending.

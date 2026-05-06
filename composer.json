@@ -10,6 +10,11 @@
         "admin",
         "gdpr"
     ],
+    "homepage": "https://github.com/padosoft/laravel-pii-redactor-admin",
+    "support": {
+        "source": "https://github.com/padosoft/laravel-pii-redactor-admin",
+        "issues": "https://github.com/padosoft/laravel-pii-redactor-admin/issues"
+    },
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.0",

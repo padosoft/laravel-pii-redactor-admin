@@ -48,3 +48,4 @@
 - TypeScript 6 treats `moduleResolution: "Node"` as deprecated `node10`; Vite/ESM packages should use `moduleResolution: "Bundler"` to keep typecheck green without suppression.
 - GitHub Actions v4 emitted Node.js 20 deprecation warnings in this repo; use current Actions majors and keep CI on Node.js 24+ for the frontend toolchain.
 - Symfony/Laravel may normalize `Cache-Control` directive ordering on binary file responses. Tests should assert required directives are present instead of comparing one serialized order.
+- Composer install without manual VCS repositories requires both this admin package and the core `padosoft/laravel-pii-redactor` package to be indexed by Packagist. Publishing only the admin package cannot make the transitive core dependency resolvable, because dependency repository definitions are ignored by root host apps.
